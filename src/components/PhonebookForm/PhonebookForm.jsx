@@ -1,28 +1,29 @@
 import { useState } from 'react';
-import { nanoid } from 'nanoid';
 import css from './phonebookForm.module.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/store';
+import {
+  useGetContactsQuery,
+  useAddContactMutation,
+} from '../../redux/contactsApi';
 
 export const PhonebookForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
-  const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts);
+  const { data } = useGetContactsQuery();
+  const [addContact] = useAddContactMutation();
 
   const handleSubmit = evt => {
     evt.preventDefault();
     const contact = {
-      id: nanoid(),
       name: name,
-      number: number,
+      phone: number,
     };
 
-    if (contacts.some(contact => contact.name === name)) {
+    if (data && data.some(contact => contact.name === name)) {
       return alert(`${name} is already in contacts`);
     }
 
-    dispatch(addContact(contact));
+    addContact(contact);
+
     setName('');
     setNumber('');
   };
